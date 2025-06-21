@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
+	"os"
 )
 
 type Config struct {
@@ -20,8 +21,15 @@ var RedisDB *redis.Client
 var Ctx = context.Background()
 
 func init() {
+
+	dir, _ := os.Getwd()
+	fmt.Println("当前运行目录：", dir)
+
 	var config Config
-	viper.SetConfigName("./config/config.yaml")
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("../config")
+	viper.AddConfigPath("./config")
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Printf("viper.ReadInConfig() failed with %s\n", err)
