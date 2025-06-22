@@ -7,9 +7,8 @@ import (
 )
 
 type CacheReq struct {
-	Prefix string `json:"prefix" form:"prefix"`
-	Page   int32  `json:"page" form:"page"`
-	Limit  int32  `json:"limit" form:"limit"`
+	Prefix string                 `json:"prefix" form:"prefix"`
+	Params map[string]interface{} `json:"params" form:"params"`
 }
 
 func CacheDel(c *gin.Context) {
@@ -19,13 +18,9 @@ func CacheDel(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	newParams := make(map[string]interface{})
-	newParams["page"] = req.Page
-	newParams["limit"] = req.Limit
-
 	var cachedata pkg.CacheData
 	cachedata.Prefix = req.Prefix
-	cachedata.Params = newParams
+	cachedata.Params = req.Params
 	err = pkg.CacheDel(cachedata)
 
 	if err != nil {

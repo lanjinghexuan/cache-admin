@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -70,9 +71,19 @@ func GetCache(result interface{}, opts CacheData, query func() (interface{}, err
 
 // 模糊删除缓存
 func CacheDelByPrefix(prefix string) error {
+	wg := sync.WaitGroup{}
 	iter := config.RedisDB.Scan(config.Ctx, 0, prefix+"*", 0).Iterator()
+	var keys []string
 	for iter.Next(config.Ctx) {
-		config.RedisDB.Del(config.Ctx, iter.Val())
+		keys = append(keys, iter.Val())
+		if len(keys) >= 100 {
+			wg.Add(1)
+			go config.RedisDB.Del(config.Ctx, keys...)
+		}
 	}
+	if len(keys) > 0 {
+		config.RedisDB.Del(config.Ctx, keys...)
+	}
+	wg.Wait()
 	return iter.Err()
 }
