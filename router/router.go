@@ -10,5 +10,7 @@ func Router(r *gin.Engine) {
 	{
 		c.GET("/del", handler.CacheDel)
 		c.GET("/delByPrefix", handler.CacheDelByPrefix)
+		c.GET("/getCacheKeyList/:prefix", handler.GetCacheKeyList)
+		c.GET("/cacheDelFind", handler.CacheDelFind)
 	}
 }

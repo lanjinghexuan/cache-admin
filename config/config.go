@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	Redis
+	Logx string `yaml:"logx"`
 }
 
 type Redis struct {
@@ -19,6 +20,7 @@ type Redis struct {
 
 var RedisDB *redis.Client
 var Ctx = context.Background()
+var Logx string
 
 func init() {
 
@@ -40,6 +42,8 @@ func init() {
 		fmt.Printf("viper.Unmarshal() failed with %s\n", err)
 		panic(err)
 	}
+
+	Logx = config.Logx
 
 	RedisDB = redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%s", config.Host, config.Port),
